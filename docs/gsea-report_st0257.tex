@@ -1,0 +1,185 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{float}
+
+\geometry{margin=2.5cm}
+
+% Configuración de listings para fragmentos de código
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray}
+}
+
+\title{
+    \textbf{GSEA - Gestión Segura y Eficiente de Archivos}\\
+    \large Documento Técnico\\
+    \vspace{0.5cm}
+    \large Examen Final Práctico - Sistemas Operativos
+}
+
+\author{
+    Juan Pablo Rúa Cartagena\\
+    Juan José Restrepo Higuita\\
+    Fredy Cadavid Franco\\[0.3cm]
+    Universidad EAFIT\\
+    Escuela de Ciencias Aplicadas e Ingeniería
+}
+\date{Noviembre 2025}
+
+\begin{document}
+
+\maketitle
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+
+GSEA (Gestión Segura y Eficiente de Archivos) es una utilidad de línea de comandos desarrollada en C++ para comprimir/descomprimir y encriptar/desencriptar archivos de manera sencilla. Se implementan algoritmos propios de compresión (Huffman) y cifrado simétrico (AES-128 en modo CBC) y se utilizan llamadas directas al sistema operativo para la entrada/salida de archivos.
+
+\section{Objetivos}
+\begin{itemize}
+    \item Implementar compresión/descompresión sin pérdida.
+    \item Implementar cifrado/descifrado simétrico básico.
+    \item Usar llamadas directas al sistema operativo para gestionar archivos.
+    \item Procesar múltiples archivos en paralelo aprovechando concurrencia a nivel de hilo.
+\end{itemize}
+
+\section{Tecnologías Utilizadas}
+\begin{itemize}
+    \item \textbf{Lenguaje:} C++17.
+    \item \textbf{Plataformas:} Windows (API Win32) y POSIX (Linux, macOS).
+    \item \textbf{Concurrencia:} Windows Threads y pthreads.
+    \item \textbf{Compilación:} Make / mingw32-make, GCC/Clang/MSVC.
+\end{itemize}
+
+\section{Diseño de la Solución}
+
+\subsection{Arquitectura general}
+El sistema se organiza en módulos independientes:
+\begin{itemize}
+    \item \textbf{main.cpp:} Orquestación y rutas de entrada/salida.
+    \item \textbf{ArgParser:} Parsing y validación de argumentos.
+    \item \textbf{FileManager:} I/O mediante llamadas del SO.
+    \item \textbf{Worker:} Procesamiento concurrente (un hilo por archivo de primer nivel).
+    \item \textbf{HuffmanCompressor:} Compresión/descompresión.
+    \item \textbf{AES:} Cifrado/descifrado AES-128 en modo CBC.
+\end{itemize}
+
+\subsection{Flujo de datos}
+\begin{enumerate}
+    \item El usuario invoca el programa con las opciones deseadas.
+    \item ArgParser valida operaciones, rutas y clave (si aplica).
+    \item main.cpp determina si la entrada es archivo o directorio.
+    \item Para directorios, se listan solo los archivos de primer nivel (no recursivo) y se asigna un hilo a cada uno.
+    \item Cada hilo lee el archivo, aplica operaciones en orden y escribe la salida.
+    \item El hilo principal espera a que todos los hilos terminen y reporta el resultado.
+\end{enumerate}
+
+\section{Módulos}
+
+\subsection{FileManager (file\_manager.cpp)}
+Realiza la I/O con llamadas nativas:
+\begin{itemize}
+    \item \textbf{Windows:} CreateFileA, ReadFile, WriteFile, CloseHandle, FindFirstFileA/FindNextFileA.
+    \item \textbf{POSIX:} open, read, write, close, opendir/readdir, mkdir.
+\end{itemize}
+Se añadió validación de tamaños con GetFileSizeEx (Windows) y verificación de \texttt{errno} en POSIX.
+
+\subsection{Worker (worker.cpp)}
+Procesa archivos en paralelo. Crea un hilo por archivo de primer nivel y consolida resultados. No implementa pool de hilos, por lo que directorios con miles de archivos pueden agotar recursos del sistema.
+
+\subsection{HuffmanCompressor (huffman.cpp)}
+Implementa Huffman con min-heap. Se añadió una validación extra para detectar datos comprimidos truncados (comprobación de bits esperados vs. disponibles).
+
+\subsection{AES (aes.cpp)}
+Cifrado/descifrado AES-128 en modo CBC. Validaciones añadidas:
+\begin{itemize}
+    \item Rechazo de tamaños de payload que no sean múltiplos del bloque al descifrar.
+    \item Control de mínimo tamaño (requiere IV + al menos un bloque).
+\end{itemize}
+\textbf{Limitaciones actuales:} derivación de clave casera (XOR repetido), IV pseudoaleatorio con \texttt{std::random\_device}/\texttt{mt19937} y sin autenticación de integridad (no hay MAC/AEAD). No debe usarse para seguridad fuerte; se recomienda PBKDF2/scrypt + HMAC o un modo AEAD (GCM/ChaCha20-Poly1305) como trabajo futuro.
+
+\section{Justificación de algoritmos}
+
+\subsection{Compresión: Huffman}
+Se eligió por ser sin pérdida, bien documentado y eficiente para datos con redundancia. Complejidad: $O(n + k \log k)$ para construir y codificar, con $k$ símbolos únicos. El formato incluye \textit{magic bytes}, tabla de frecuencias y cuenta total de bits, permitiendo reconstrucción del árbol.
+
+\subsection{Cifrado: AES-128}
+Estándar reconocido y eficiente. En este proyecto se implementa modo CBC con padding PKCS\#7. Debido a la derivación de clave simplificada y falta de autenticación, el nivel de seguridad efectivo es básico y adecuado solo para fines académicos.
+
+\section{Implementación y consideraciones}
+\begin{itemize}
+    \item El manejo de extensiones ahora elimina correctamente \texttt{.aes} y \texttt{.huf} cuando se usa \texttt{-ud} sobre archivos \texttt{.huf.aes}.
+    \item Se valida la longitud de datos cifrados y se detectan bitstreams Huffman truncados.
+    \item La lectura/escritura carga cada archivo completo en memoria; para archivos muy grandes se podría streamizar en trabajo futuro.
+    \item El listado de directorios no es recursivo y el nombre de salida se aplana (solo nombre de archivo, sin subdirectorios).
+\end{itemize}
+
+\section{Estrategia de concurrencia}
+\begin{itemize}
+    \item Paralelismo a nivel de archivo (un hilo por archivo listado).
+    \item Windows: CreateThread + WaitForMultipleObjects; POSIX: pthread\_create + pthread\_join.
+    \item No hay límite de hilos; recomendable añadir pool para directorios masivos.
+\end{itemize}
+
+\section{Guía de uso}
+
+\subsection{Requisitos}
+\begin{itemize}
+    \item \textbf{Windows:} MinGW-w64 o MSVC con C++17.
+    \item \textbf{Linux/macOS:} GCC 7+ o Clang 5+ con pthreads.
+    \item Memoria: suficiente para cargar cada archivo a procesar.
+\end{itemize}
+
+\subsection{Compilación}
+\begin{lstlisting}[language=bash]
+mingw32-make   # Windows (MinGW)
+make           # Linux/macOS
+\end{lstlisting}
+El ejecutable queda en \texttt{bin/gsea.exe} o \texttt{bin/gsea}.
+
+\subsection{Ejemplos}
+\begin{lstlisting}[language=bash]
+bin/gsea -c  -i datos.txt        -o datos.huf
+bin/gsea -d  -i datos.huf        -o datos.txt
+bin/gsea -e  -i secreto.pdf      -o secreto.aes -k clave123
+bin/gsea -ce -i carpeta/         -o salida/     -k clave123   # no recursivo
+bin/gsea -ud -i salida/          -o restaurado/ -k clave123   # elimina .aes/.huf
+\end{lstlisting}
+
+\section{Pruebas}
+Se incluyen scripts de prueba (\texttt{test\_build.sh} y \texttt{test\_build.bat}) que limpian, compilan y ejecutan un flujo básico de \texttt{-c/-d} y \texttt{-e/-u} verificando integridad con un archivo de texto repetitivo.
+
+\section{Trabajo futuro}
+\begin{itemize}
+    \item Pool de hilos y procesamiento recursivo de directorios.
+    \item Stream de archivos grandes para reducir uso de memoria.
+    \item Derivación de clave robusta (PBKDF2/scrypt) e inclusión de MAC o modo AEAD.
+    \item Progreso y manejo más férreo de errores E/S.
+\end{itemize}
+
+\section{Referencias}
+\begin{enumerate}
+    \item Huffman, D.A. (1952). ``A Method for the Construction of Minimum-Redundancy Codes''.
+    \item NIST (2001). ``FIPS 197: Advanced Encryption Standard (AES)''.
+    \item Stevens, W.R., \& Rago, S.A. (2013). \textit{Advanced Programming in the UNIX Environment}.
+    \item Russinovich, M.E., Solomon, D.A., \& Ionescu, A. (2012). \textit{Windows Internals}.
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Converted from Markdown</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      color: #333;
+    }
+    h1, h2, h3 { color: #333; margin-top: 1.5em; margin-bottom: 0.5em; }
+    h1 { font-size: 2em; }
+    h2 { font-size: 1.5em; }
+    h3 { font-size: 1.2em; }
+    code {
+      background: #f4f4f4;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      line-height: 1.4;
+    }
+    blockquote {
+      border-left: 4px solid #ddd;
+      margin: 1em 0;
+      padding-left: 20px;
+      color: #666;
+      font-style: italic;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1em 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #f5f5f5;
+      font-weight: bold;
+    }
+    ul, ol {
+      margin: 1em 0;
+      padding-left: 2em;
+    }
+    li {
+      margin: 0.5em 0;
+    }
+  </style>
+</head>
+<body>
+<h1><strong>Universidad EAFIT</strong></h1>
+<h3><strong>Escuela de Ciencias Aplicadas e Ingeniería</strong></h3>
+<h3><strong>Examen Final Práctico - Sistemas Operativos</strong></h3>
+<p><strong>Título del Proyecto:</strong> Utilidad de Gestión Segura y Eficiente de Archivos (GSEA)  </p>
+<p><strong>Modalidad:</strong> Grupal (Equipos de hasta 5 integrantes)   </p>
+<p><strong>Fecha de Entrega:</strong> Noviembre 20 de 2025</p>
+<hr>
+<h2><strong>1. Objetivo General</strong></h2>
+<p>El presente examen busca evaluar la capacidad de los estudiantes para aplicar conceptos fundamentales de sistemas operativos en el diseño y desarrollo de una aplicación de bajo nivel. El estudiante deberá demostrar dominio en la gestión de archivos mediante <strong>llamadas al sistema</strong>, la implementación de <strong>concurrencia</strong> para la optimización del rendimiento y la <strong>investigación e implementación de algoritmos</strong> de compresión y encriptación desde cero, sin depender de librerías externas para dichas funcionalidades.</p>
+<hr>
+<h2><strong>2. Descripción del Problema</strong></h2>
+<p>Se debe desarrollar una utilidad de línea de comandos en <strong>C o C++</strong> que permita a un usuario comprimir/descomprimir y encriptar/desencriptar archivos o directorios completos de manera eficiente. La eficiencia se logrará procesando múltiples archivos de forma concurrente.</p>
+<p>La aplicación deberá ser invocada desde la terminal y aceptar los siguientes parámetros:</p>
+<ul>
+<li><strong>Operación:</strong> <code>-c</code> (comprimir), <code>-d</code> (descomprimir), <code>-e</code> (encriptar), <code>-u</code> (desencriptar). Se pueden combinar operaciones (ej. <code>-ce</code> para comprimir y luego encriptar).</li>
+<li><strong>Algoritmo de Compresión:</strong> <code>--comp-alg [nombre_algoritmo]</code></li>
+<li><strong>Algoritmo de Encriptación:</strong> <code>--enc-alg [nombre_algoritmo]</code></li>
+<li><strong>Entrada:</strong> <code>-i [ruta_archivo_o_directorio]</code></li>
+<li><strong>Salida:</strong> <code>-o [ruta_archivo_o_directorio_salida]</code></li>
+<li><strong>Clave (opcional):</strong> <code>-k [clave_secreta]</code> para las operaciones de encriptación/desencriptación.</li>
+</ul>
+<h4><strong>Funcionalidades Clave:</strong></h4>
+<ol>
+<li><strong>Gestor de Archivos (File Manager):</strong> La aplicación debe operar sobre un único archivo o sobre todos los archivos dentro de un directorio. Debe usar <strong>llamadas directas al sistema operativo</strong> (ej. <code>open</code>, <code>read</code>, <code>write</code>, <code>close</code>, <code>opendir</code>, <code>readdir</code> en POSIX; o <code>CreateFile</code>, <code>ReadFile</code>, <code>WriteFile</code> en Windows API) en lugar de las abstracciones de librerías estándar como <code>&lt;stdio.h&gt;</code> (<code>fopen</code>, <code>fread</code>).</li>
+<li><strong>Concurrencia:</strong> Al procesar un directorio, la aplicación debe lanzar un <strong>hilo o proceso separado para cada archivo</strong>. El objetivo es paralelizar el trabajo y mejorar el rendimiento en sistemas multinúcleo. Se debe gestionar adecuadamente el ciclo de vida de estos hilos/procesos.</li>
+<li><strong>Algoritmos Propios:</strong> Los algoritmos de compresión y encriptación deben ser implementados por el equipo. <strong>Está estrictamente prohibido el uso de librerías externas</strong> como <code>zlib</code>, <code>OpenSSL</code>, <code>Crypto++</code>, etc., para estas tareas.<ul>
+<li><strong>Compresión:</strong> El equipo es libre de elegir e implementar cualquier algoritmo de <strong>compresión sin pérdida</strong>. La elección debe estar justificada en el documento técnico.<ul>
+<li><em>Sugerencias: Codificación Huffman, Run-Length Encoding (RLE), Lempel-Ziv-Welch (LZW).</em></li>
+</ul>
+</li>
+<li><strong>Encriptación:</strong> El equipo es libre de elegir e implementar cualquier algoritmo de <strong>encriptación simétrica (de clave secreta)</strong>. La elección debe estar justificada.<ul>
+<li><em>Sugerencias: Cifrado Vigenère, DES (implementando sus rondas y operaciones), o una versión simplificada de AES (implementando las operaciones de S-box, ShiftRows, MixColumns).</em></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2><strong>3. Entregables</strong></h2>
+<ol>
+<li><strong>Código Fuente:</strong> Un archivo <code>.zip</code> o <code>.tar.gz</code> con todo el código fuente en C/C++. El código debe estar bien comentado y estructurado, e incluir un <code>Makefile</code> o script de compilación.</li>
+<li><strong>Documento Técnico (PDF):</strong> Un documento explicando la solución, que debe incluir:<ul>
+<li><strong>Introducción:</strong> Descripción del proyecto.</li>
+<li><strong>Diseño de la Solución:</strong> Diagramas de arquitectura y flujo de datos.</li>
+<li><strong>Justificación de Algoritmos:</strong> <strong>(Sección Crítica)</strong> Explicación técnica de por qué se eligieron los algoritmos específicos, comparando sus ventajas y desventajas (complejidad, rendimiento, nivel de compresión/seguridad).</li>
+<li><strong>Implementación de Algoritmos:</strong> Explicación detallada de la implementación.</li>
+<li><strong>Estrategia de Concurrencia:</strong> Descripción del modelo de concurrencia utilizado.</li>
+<li><strong>Guía de Uso:</strong> Instrucciones claras sobre cómo compilar y ejecutar el programa.</li>
+</ul>
+</li>
+<li><strong>Descripción de un Caso de Uso Válido:</strong> Un documento de una página describiendo un escenario real donde la herramienta sería útil.</li>
+<li><strong>Video de Sustentación:</strong> Un video (máximo 10 minutos) con una demostración en vivo del programa y una explicación de las partes más relevantes del código (llamadas al sistema, concurrencia y algoritmos).</li>
+</ol>
+<hr>
+<h2><strong>4. Rúbrica de Evaluación (Total: 100 puntos)</strong></h2>
+<table>
+<thead>
+<tr>
+<th align="left">Criterio</th>
+<th align="left">Descripción de la Evaluación</th>
+<th align="left">Puntaje Máximo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>Funcionalidad del Programa (30 pts)</strong></td>
+<td align="left"><strong>Compresión/Descompresión:</strong> El programa comprime y descomprime sin corrupción de datos.</td>
+<td align="left">10</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>Encriptación/Desencriptación:</strong> El programa encripta y desencripta correctamente según la clave.</td>
+<td align="left">10</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>Manejo de Argumentos y Errores:</strong> Interpreta correctamente los parámetros y gestiona fallos de forma robusta.</td>
+<td align="left">10</td>
+</tr>
+<tr>
+<td align="left"><strong>Aplicación de Conceptos de SO (40 pts)</strong></td>
+<td align="left"><strong>Uso de Llamadas al Sistema:</strong> Usa exclusivamente llamadas al sistema para la manipulación de archivos.</td>
+<td align="left">15</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>Implementación de Concurrencia:</strong> La concurrencia está bien implementada, gestionando correctamente hilos/procesos y mejorando el rendimiento.</td>
+<td align="left">15</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>Manejo Eficiente de Recursos:</strong> No presenta fugas de memoria, descriptores de archivos, o procesos &quot;zombie&quot;.</td>
+<td align="left">10</td>
+</tr>
+<tr>
+<td align="left"><strong>Calidad del Código y Algoritmos (20 pts)</strong></td>
+<td align="left"><strong>Implementación y Justificación de Algoritmos:</strong> Los algoritmos elegidos son implementados correctamente desde cero. La justificación de su elección es sólida y demuestra comprensión de sus características.</td>
+<td align="left">15</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>Estructura y Claridad:</strong> El código es legible, modular y está bien documentado.</td>
+<td align="left">5</td>
+</tr>
+<tr>
+<td align="left"><strong>Documentación y Presentación (10 pts)</strong></td>
+<td align="left"><strong>Calidad de Entregables:</strong> El documento técnico, el caso de uso y el video son claros, completos y profesionales.</td>
+<td align="left">10</td>
+</tr>
+</tbody></table>
+<hr>
+<h2><strong>5. Ejemplo de un Caso de Uso Válido</strong></h2>
+<p><strong>Escenario:</strong> Una startup de biotecnología genera grandes volúmenes de datos de secuenciación genética. Estos datos son altamente repetitivos (ideales para compresión) y extremadamente confidenciales.</p>
+<p><strong>Problema:</strong></p>
+<ul>
+<li><strong>Confidencialidad:</strong> Proteger la propiedad intelectual y los datos de los pacientes es una prioridad máxima.</li>
+<li><strong>Almacenamiento:</strong> Los archivos de datos crudos son masivos y costosos de almacenar a largo plazo.</li>
+<li><strong>Eficiencia:</strong> El procesamiento diario de lotes de datos debe ser lo más rápido posible.</li>
+</ul>
+<p><strong>Solución con la Herramienta &quot;GSEA&quot;:</strong>
+Un bioinformático podría automatizar el archivado de los resultados de un día con un script que ejecute:</p>
+<pre><code class="language-bash">./gsea -ce --comp-alg lzw --enc-alg des -i &quot;./Resultados/2025-10-15/&quot; -o &quot;./Archivados/2025-10-15.bak&quot; -k &quot;G3n0m3S3cur1ty!&quot;
+</code></pre>
+<p><strong>Resultado:</strong>
+La herramienta procesaría concurrentemente cada archivo de resultados en el directorio. Gracias a la elección del algoritmo <strong>LZW</strong>, obtendría una excelente tasa de compresión debido a la naturaleza repetitiva de los datos genéticos. La <strong>encriptación con DES</strong> aseguraría que los datos permanezcan confidenciales, cumpliendo con las normativas de protección de datos y asegurando la propiedad intelectual de la empresa.</p>
+
+</body>
+</html>

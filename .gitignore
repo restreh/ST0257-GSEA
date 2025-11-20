@@ -1,0 +1,44 @@
+# Compiled object files
+*.o
+*.obj
+
+# Executables
+*.exe
+*.out
+gsea
+
+# Directories
+obj/
+bin/
+output/
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.toc
+*.out
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+
+# PDFs (generated from LaTeX)
+documento_tecnico.pdf
+caso_de_uso.pdf
+
+# OS specific
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# IDE specific
+.vscode/
+.idea/
+*.code-workspace
+
+# Build artifacts
+*.a
+*.so
+*.dll
+*.dylib
+

@@ -1,0 +1,24 @@
+GSEA - Test File
+
+This is a test file for the GSEA (Gestión Segura y Eficiente de Archivos) project.
+
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+This file contains repetitive content to test Huffman compression.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+Data compression is the process of encoding information using fewer bits.
+Data compression is the process of encoding information using fewer bits.
+Data compression is the process of encoding information using fewer bits.
+
+End of test file.
+
